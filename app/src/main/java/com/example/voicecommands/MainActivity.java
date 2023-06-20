@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
                 REQUEST_RECORD_PERMISSION);
 
-        textTV = (TextView) findViewById(R.id.text_tv);
-        micIV = (ImageView) findViewById(R.id.state_iv);
-        listeningTV = (TextView) findViewById(R.id.listening_tv);
+        textTV = (TextView) findViewById(R.id.live_text_tv);
+        micIV = (ImageView) findViewById(R.id.mic_iv);
+        listeningTV = (TextView) findViewById(R.id.current_command_tv);
         commandListTV = (TextView) findViewById(R.id.command_list_tv);
 
         micIV.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
 
         }
+        listeningTV.setText("");
         commandListTV.setText("");
         for (Command word : recognizedWords) {
             commandListTV.append(word.getFullCommand() + "\n");

@@ -1,43 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:id="@+id/constraint_layout"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:orientation="vertical"
+    android:background="#FFF3F3"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/listening_tv"
+        android:id="@+id/current_command_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="waiting"
-        android:textSize="50sp"
-
-        />
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="12dp"
+        android:color="#184949"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/mic_iv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.594"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="reset" />
 
     <ImageView
-        android:id="@+id/state_iv"
-        android:layout_width="148dp"
-        android:layout_height="115dp"
+        android:id="@+id/mic_iv"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:foreground="?selectableItemBackground"
         android:src="@drawable/ic_mic_black_24dp"
-        android:textSize="90sp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.614"
+        app:tint="#2F6565" />
 
     <TextView
-        android:id="@+id/text_tv"
+        android:id="@+id/live_text_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:text="Talk..."
-        tools:text="Start talking..." />
+        android:color="#2F6565"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/current_command_tv"
+        app:layout_constraintVertical_bias="0.73"
+        tools:text="live text" />
 
     <TextView
         android:id="@+id/command_list_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="control"
-        android:textSize="15sp" />
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="45dp"
+        android:color="#A94E4E"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="code 3455" />
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
