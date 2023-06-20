@@ -1,9 +1,5 @@
 package com.example.voicecommands;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +15,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements RecognitionListener {
@@ -30,27 +31,28 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private static final String KEY_BACK = "back";
     public Boolean isListening = false;
     private SpeechRecognizer speechRecognizer;
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private Intent recognizerIntent;
     private ImageView micIV;
-    private TextView textTV, commandListTV, listeningTV;
+    private TextView liveTextTV, commandListTV, currentCommandTV;
     private String lang = "en-US";
-    private ArrayList<Command> recognizedWords = new ArrayList<>();
+    private ArrayList<Command> recognizedCommands = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        // Request audio recording permission
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
                 REQUEST_RECORD_PERMISSION);
 
-        textTV = (TextView) findViewById(R.id.live_text_tv);
+        // Initialize views
+        liveTextTV = (TextView) findViewById(R.id.live_text_tv);
         micIV = (ImageView) findViewById(R.id.mic_iv);
-        listeningTV = (TextView) findViewById(R.id.current_command_tv);
+        currentCommandTV = (TextView) findViewById(R.id.current_command_tv);
         commandListTV = (TextView) findViewById(R.id.command_list_tv);
 
+        // Set click listener for mic button
         micIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,14 +62,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
         RadioGroup langSelect = (RadioGroup) findViewById(R.id.lang_select);
         RadioButton checkedRadioButton = (RadioButton) langSelect.findViewById(langSelect.getCheckedRadioButtonId());
-        langSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
-                RadioButton checkedRadioButton = (RadioButton)group.findViewById(R.id.lang_eng);
+
+        // Set listener for language selection radio group
+        langSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedRadioButton = (RadioButton) group.findViewById(R.id.lang_eng);
                 boolean isChecked = checkedRadioButton.isChecked();
-                if (isChecked)
-                {
+                if (isChecked) {
                     lang = "en-US";
                 } else {
                     lang = "de-DE";
@@ -76,10 +77,11 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
         });
 
-
+        // Create SpeechRecognizer and set recognition listener
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(this);
 
+        // Create intent for speech recognition
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, RecognizerIntent.FORMATTING_OPTIMIZE_LATENCY);
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(TAG, "onRequestPermissionsResult: has permission");
             } else {
-                Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getResources().getText(R.string.insufficient_permissions), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -106,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     @Override
     protected void onDestroy() {
         speechRecognizer.destroy();
-        textTV.setText("");
-        listeningTV.setText("");
+        liveTextTV.setText("");
+        currentCommandTV.setText("");
         micIV.setImageResource(R.drawable.ic_mic_black_24dp);
         super.onDestroy();
     }
@@ -118,11 +119,16 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     }
 
     @Override
-    public void onBeginningOfSpeech() {}
+    public void onBeginningOfSpeech() {
+    }
+
     @Override
-    public void onRmsChanged(float v) {}
+    public void onRmsChanged(float v) {
+    }
+
     @Override
-    public void onBufferReceived(byte[] bytes) {}
+    public void onBufferReceived(byte[] bytes) {
+    }
 
     @Override
     public void onEndOfSpeech() {
@@ -131,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     @Override
     public void onError(int i) {
+        // Log the error and display a toast with the relevant error message
         Log.i(TAG, "onError: " + getResources().getString(getErrorText(i)));
         micIV.setImageResource(R.drawable.ic_mic_black_24dp);
         String errorMessage = getResources().getString(getErrorText(i));
@@ -139,14 +146,19 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     @Override
     public void onResults(Bundle bundle) {
+        // Get the recognized speech results
         ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        // Ensure results are not empty
         if (matches == null || matches.isEmpty()) return;
+        // Split results into individual words
         String[] words = matches.get(0).split("\\s");
 
         for (String word : words) {
+            // Handle synonyms for English (US) language
             if (lang.equals("en-US")) {
-                word = getNumber(word);
+                word = handleSynonyms(word);
             }
+            // Check for recognized code words or in listening mode, a number
             switch (word) {
                 case KEY_CODE:
                     code();
@@ -161,49 +173,60 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     reset();
                     break;
                 default:
-                    int lastIndex = recognizedWords.size() - 1;
+                    int lastIndex = recognizedCommands.size() - 1;
                     if (TextUtils.isDigitsOnly(word) && isListening) {
-                            recognizedWords.get(lastIndex).setNumbers((recognizedWords.get(lastIndex).getNumbers() + word));
+                        recognizedCommands.get(lastIndex).setCodeNumbers((recognizedCommands.get(lastIndex).getCodeNumbers() + word));
                     } else {
+                        // disable listening mode if the result is neither code word nor number
                         isListening = false;
                     }
             }
 
         }
-        listeningTV.setText("");
+        // Clear the display of the existing live text
+        currentCommandTV.setText("");
         commandListTV.setText("");
-        for (Command word : recognizedWords) {
-            commandListTV.append(word.getFullCommand() + "\n");
+        liveTextTV.setText("");
+
+        // Display all the full recognized commands in the command list text view
+        for (Command command : recognizedCommands) {
+            commandListTV.append(command.getFullCommand() + "\n");
 
         }
-        textTV.setText("");
     }
 
     @Override
     public void onPartialResults(Bundle bundle) {
+        // Use partialResults for live display of recognized speech
+        // Get the partial speech results
         ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        // Ensure results are not empty
         if (matches == null || matches.isEmpty()) return;
+        // Split the latest partial result into individual words
         String[] latestResult = matches.get(matches.size() - 1).split("\\s");
-
+        // Extract the last word from the latest result
         String currentWord = latestResult[latestResult.length - 1].toLowerCase().trim(); // Extract the last word
         if (currentWord.length() == 0) return;
-        textTV.setText(currentWord);
 
+        // Display the current word in the live text view
+        liveTextTV.setText(currentWord);
+
+        // Check the current word against predefined keywords and display it in the live command text
         switch (currentWord) {
             case KEY_CODE:
-                listeningTV.setText(KEY_CODE);
+                currentCommandTV.setText(KEY_CODE);
                 break;
             case KEY_COUNT:
-                listeningTV.setText(KEY_COUNT);
+                currentCommandTV.setText(KEY_COUNT);
                 break;
             case KEY_BACK:
-                listeningTV.setText(KEY_BACK);
+                currentCommandTV.setText(KEY_BACK);
                 break;
             case KEY_RESET:
-               listeningTV.setText(KEY_RESET);
+                currentCommandTV.setText(KEY_RESET);
                 break;
             default:
-               break;
+                break;
         }
     }
 
@@ -211,7 +234,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public void onEvent(int i, Bundle bundle) {
     }
 
-    private String getNumber(String word) {
+    // Handle synonyms for English (US) language
+    private String handleSynonyms(String word) {
         switch (word) {
             case "zero":
             case "oh":
@@ -256,26 +280,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         return word;
     }
 
-    private void code() {
-        isListening = true;
-        recognizedWords.add(new Command(KEY_CODE, ""));
-    }
-
-    private void count() {
-        isListening = true;
-        recognizedWords.add(new Command(KEY_COUNT, ""));
-    }
-
-    private void reset() {
-        isListening = false;
-        recognizedWords.get(recognizedWords.size() - 1).setCode("");
-    }
-
-    private void back() {
-        isListening = false;
-        recognizedWords.remove(recognizedWords.size() - 1);
-    }
-
+    // Method to get the error message based on error code
     public static int getErrorText(int errorCode) {
         int message;
         switch (errorCode) {
@@ -311,5 +316,31 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 break;
         }
         return message;
+    }
+
+    private void code() {
+        // Method for when code is called. Ready to listen for number input.
+        isListening = true;
+        recognizedCommands.add(new Command(KEY_CODE, ""));
+    }
+
+    private void count() {
+        // Method for when count is called. Ready to listen for number input.
+        isListening = true;
+        recognizedCommands.add(new Command(KEY_COUNT, ""));
+    }
+
+    private void reset() {
+        // Method for when reset is called.
+        // No longer ready to listen for number input and removes last code word
+        isListening = false;
+        recognizedCommands.get(recognizedCommands.size() - 1).setCodeWord("");
+    }
+
+    private void back() {
+        // Method for when back is called.
+        // No longer listening for number input and removes last full command.
+        isListening = false;
+        recognizedCommands.remove(recognizedCommands.size() - 1);
     }
 }

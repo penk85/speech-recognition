@@ -1,34 +1,29 @@
 package com.example.voicecommands;
 
 public class Command {
-    private String mCode;
-    private String mNumbers;
+    private String mCodeWord;
+    private String mCodeNumbers;
 
-    public Command(String code, String numbers) {
-        mCode = code;
-        mNumbers = numbers;
+    public Command(String codeWord, String codeNumbers) {
+        mCodeWord = codeWord;
+        mCodeNumbers = codeNumbers;
     }
 
-    public String getCode() {
-        return mCode;
+    public String getCodeWord() {
+        return mCodeWord;
     }
 
-    public void setCode(String code) {
-        mCode = code;
+    public void setCodeWord(String codeWord) {
+        mCodeWord = codeWord;
     }
 
-    public String getNumbers() {
-        return mNumbers;
+    public String getCodeNumbers() {
+        return mCodeNumbers;
     }
 
-    public void setNumbers(String numbers) {
-        mNumbers = numbers;
+    public void setCodeNumbers(String codeNumbers) {
+        mCodeNumbers = codeNumbers;
     }
 
-    public String getFullCommand() { return mCode + " " + mNumbers; }
-
-    public void clear() {
-        mNumbers = "";
-        mCode = "";
-    }
+    public String getFullCommand() { return mCodeWord + " " + mCodeNumbers; }
 }
