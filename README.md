@@ -36,9 +36,10 @@ It allows users to give voice commands such as "code," "count," "back," and "res
 ## Usage
 
 1. Launch the Speech Command Recognition application on your Android device.
-2. Grant the microphone permission when prompted.
-3. Tap the microphone icon to start speech recognition.
-4. Speak one of the supported commands: "code [number]", "count [number]", "back", or "reset".
+2. If on emulator, make sure the device settings Microphone is set to "Virtual microphone uses host audio input"
+3. Grant the microphone permission when prompted. *Important: in the phone settings permissions, grant permission to Google to use the microphone.*
+4. Tap the microphone icon to start speech recognition.
+5. Speak one of the supported commands: "code [number]", "count [number]", "back", or "reset".
 6. The application will recognize the command and perform the corresponding action.
 7. View the recognized commands in the command list.
 
