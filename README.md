@@ -8,7 +8,7 @@ It allows users to give voice commands such as "code," "count," "back," and "res
 ## Features
 
 - Recognizes spoken commands and performs actions based on the command.
-- Supports both English (US) language and German (DE) with synonyms handling for improved recognition accurac.
+- Supports both English (US) language and German (DE) with synonyms handling for improved recognition accuracy.
 - Displays recognized commands in a command list.
 - Provides visual feedback for live speech recognition.
 
@@ -16,7 +16,7 @@ It allows users to give voice commands such as "code," "count," "back," and "res
 ## Limitations
 
 - **Number Recognition:** 
-- The current implementation of the speech recognizer faces challenges in reliably distinguishing between "12" (twelve) and "1 2" (one two), resulting in inconsistent recognition results. Additionally, the recognizer struggles to exclude numbers over 10. To address this limitation, one potential solution is to leverage Google Cloud's Model Adaptation, which allows for prioritizing certain words and improving recognition accuracy. However, the current implementation relies on Android's built-in speech recognizer, which lacks such capabilities and operates solely offline.
+- The current implementation of the speech recognizer faces challenges in reliably distinguishing between "12" (twelve) and "1 2" (one two), resulting in inconsistent recognition results. Additionally, the recognizer struggles to exclude numbers over 10. To address this limitation, one potential solution is to leverage Google Cloud's Model Adaptation, which allows for prioritizing certain words and improving recognition accuracy. However, the current implementation relies on Android's built-in speech recognizer, which lacks such capabilities and operates primarily offline. Synonms and word to digit conversion is handled in the `handleSynonyms` method, currently set to handle "us-EN" only.
 - **Live Results:** 
 - During the speech recognition process, the onPartialResults method is called multiple times, which can lead to difficulties in processing live results without encountering redundant data. To ensure accurate and non-repetitive command processing, the application processes the full final results only after the onResults method is triggered when the recording stops.
 - **Background Hotword Trigger:** 
@@ -50,5 +50,3 @@ You can customize the application by modifying the following:
 - Modify the handling of synonyms in the `handleSynonyms` method of the `MainActivity` class to support different languages or synonyms.
 - Customize the UI by modifying the layout XML files in the `res/layout` directory.
 
-
-## Limitation
